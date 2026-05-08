@@ -103,6 +103,7 @@
             background: #ffffff;
             border: 1px solid var(--line);
             box-shadow: var(--shadow);
+            border-bottom: 3px solid var(--accent);
         }
 
         .brand {
@@ -122,6 +123,7 @@
         .brand strong {
             font-size: 20px;
             letter-spacing: -0.03em;
+            color: var(--accent);
         }
 
         .nav {
@@ -153,9 +155,14 @@
         }
 
         .nav-link:hover,
-        .nav-button:hover,
+        .nav-button:hover {
+            opacity: 0.85;
+            background: #edeae6;
+        }
+
         .btn:hover {
-            opacity: 0.92;
+            opacity: 0.9;
+            transform: translateY(-1px);
         }
 
         .nav-link.active {
@@ -238,6 +245,7 @@
             padding: 16px 18px;
             border-radius: 12px;
             border: 1px solid var(--line);
+            border-left: 3px solid var(--accent);
             background: #faf8f5;
         }
 
@@ -296,6 +304,7 @@
         .btn-primary {
             background: var(--accent);
             color: #fff9f4;
+            box-shadow: 0 2px 10px rgba(179, 19, 27, 0.38);
         }
 
         .btn-secondary {
@@ -487,18 +496,32 @@
         .receipt-wrap {
             display: grid;
             place-items: center;
+            background: #c5bfb8;
+            border-radius: 14px;
+            padding: 32px 24px;
+            border: 1px solid #b0aaa3;
         }
 
+            .receipt-stage {
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
         .receipt {
-            width: min(100%, 320px);
-            padding: 16px 14px 18px;
-            border-radius: 10px;
-            border: 1px solid #cfcfcf;
-            background: #ffffff;
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+            width: min(100%, 300px);
+            padding: 18px 16px 24px;
+            border-radius: 2px;
+            border: none;
+            background: #fffef9;
+            box-shadow:
+                0 2px 0 0 rgba(0,0,0,0.06),
+                0 14px 40px rgba(0, 0, 0, 0.22),
+                0 4px 10px rgba(0, 0, 0, 0.10);
             font-family: var(--mono-font);
             font-size: 11px;
-            line-height: 1.4;
+            line-height: 1.5;
         }
 
         .receipt-center {
@@ -589,10 +612,10 @@
                 background: white;
             }
 
+            /* hide all chrome — only the receipt aside survives */
             .topbar,
             .screen-only,
             .alert,
-            .page-head .inline-actions,
             .print-note {
                 display: none !important;
             }
@@ -600,6 +623,29 @@
             .shell {
                 max-width: none;
                 padding: 0;
+            }
+
+            main {
+                padding-top: 0;
+            }
+
+            .grid-2 {
+                display: block;
+            }
+
+            .receipt-wrap {
+                display: block;
+                width: 100%;
+                text-align: center;
+                background: none;
+                padding: 0;
+                border: none;
+                border-radius: 0;
+            }
+
+            .receipt-stage {
+                width: 100%;
+                display: block;
             }
 
             .panel {
@@ -610,12 +656,15 @@
             }
 
             .receipt {
-                width: 80mm;
-                max-width: none;
+                display: inline-block;
+                width: 300px;
+                text-align: left;
                 border: none;
                 border-radius: 0;
                 box-shadow: none;
                 background: white;
+                padding: 0;
+                margin: 0;
             }
         }
     </style>

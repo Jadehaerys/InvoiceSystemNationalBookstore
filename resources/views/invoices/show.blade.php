@@ -8,14 +8,14 @@
         $buyerAddress = $invoice->customer?->address ?? 'Retail Counter Sale';
     @endphp
 
-    <div class="page-head">
+    <div class="page-head screen-only">
         <div>
             <span class="badge">Generated Receipt</span>
-            <h1 class="page-title" style="margin-top: 12px;">Thermal invoice preview</h1>
-            <p class="page-subtitle">This preview is tightened for an 80mm receipt style and matches the National Book Store - Ventic Branch branding used throughout the project.</p>
+            <h1 class="page-title" style="margin-top: 12px;">Receipt Preview</h1>
+            <p class="page-subtitle">National Book Store &mdash; Ventic Branch &bull; Liloan, Cebu</p>
         </div>
 
-        <div class="inline-actions screen-only">
+        <div class="inline-actions">
             <button type="button" onclick="window.print()" class="btn btn-primary">Print Receipt</button>
             <a href="{{ route('invoices.pdf', $invoice) }}" class="btn btn-secondary">Download PDF</a>
             @if (auth()->user()->is_admin)
@@ -26,7 +26,7 @@
     </div>
 
     <div class="grid-2">
-        <section class="panel">
+        <section class="panel screen-only">
             <span class="badge">Transaction Summary</span>
             <div class="table-wrap" style="margin-top: 18px;">
                 <table>
@@ -71,7 +71,7 @@
         </section>
 
         <aside class="receipt-wrap">
-            <div>
+            <div class="receipt-stage">
                 <div class="receipt print-area">
                     @include('invoices._receipt', ['invoice' => $invoice])
                 </div>
