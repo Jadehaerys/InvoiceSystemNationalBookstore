@@ -624,7 +624,7 @@
     <div class="shell">
         <header class="topbar screen-only">
             <a href="{{ auth()->check() ? route('dashboard') : route('home') }}" class="brand">
-                <span class="eyebrow">Simple Laravel POS Project</span>
+                <span class="eyebrow">IT Elect 2 Project</span>
                 <strong>National Book Store - Ventic Branch</strong>
             </a>
 
