@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -19,6 +20,8 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
+        'customer_id',
+        'is_admin',
         'name',
         'email',
         'password',
@@ -42,8 +45,15 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
+            'customer_id' => 'integer',
+            'is_admin' => 'boolean',
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function customer(): BelongsTo
+    {
+        return $this->belongsTo(Customer::class);
     }
 }

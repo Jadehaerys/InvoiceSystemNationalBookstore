@@ -13,6 +13,7 @@ class Product extends Model
     protected $fillable = [
         'name',
         'price',
+        'stock_quantity',
         'category',
         'description',
     ];
@@ -21,6 +22,7 @@ class Product extends Model
     {
         return [
             'price' => 'decimal:2',
+            'stock_quantity' => 'integer',
         ];
     }
 

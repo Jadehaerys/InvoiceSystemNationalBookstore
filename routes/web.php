@@ -26,6 +26,7 @@ Route::post('/logout', [AuthController::class, 'logout'])
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [InvoiceController::class, 'index'])->name('dashboard');
     Route::get('/pos', [InvoiceController::class, 'create'])->name('pos.create');
+    Route::get('/invoices/{invoice}/pdf', [InvoiceController::class, 'downloadPdf'])->name('invoices.pdf');
 
     Route::resource('invoices', InvoiceController::class);
     Route::resource('products', ProductController::class);
