@@ -1,51 +1,65 @@
 @php
-    $navItems = [
-        [
-            'label' => 'POS',
-            'route' => 'pos.create',
-            'active' => request()->routeIs('pos.create') || request()->routeIs('invoices.create') || request()->routeIs('invoices.edit'),
-        ],
-        [
-            'label' => 'Invoices',
-            'route' => 'invoices.index',
-            'active' => request()->routeIs('invoices.index') || request()->routeIs('invoices.show'),
-        ],
-        [
-            'label' => 'Products',
-            'route' => 'products.index',
-            'active' => request()->routeIs('products.*'),
-        ],
-        [
-            'label' => 'Customers',
-            'route' => 'customers.index',
-            'active' => request()->routeIs('customers.*'),
-        ],
-    ];
+    $user = auth()->user();
+    $navItems = $user && $user->is_admin
+        ? [
+            [
+                'label' => 'POS',
+                'route' => 'pos.create',
+                'active' => request()->routeIs('pos.create') || request()->routeIs('invoices.create') || request()->routeIs('invoices.edit'),
+            ],
+            [
+                'label' => 'Invoices',
+                'route' => 'invoices.index',
+                'active' => request()->routeIs('invoices.index') || request()->routeIs('invoices.show'),
+            ],
+            [
+                'label' => 'Products',
+                'route' => 'products.index',
+                'active' => request()->routeIs('products.*'),
+            ],
+            [
+                'label' => 'Customers',
+                'route' => 'customers.index',
+                'active' => request()->routeIs('customers.*'),
+            ],
+        ]
+        : [
+            [
+                'label' => 'Shop',
+                'route' => 'pos.create',
+                'active' => request()->routeIs('pos.create') || request()->routeIs('invoices.create'),
+            ],
+            [
+                'label' => 'My Receipts',
+                'route' => 'invoices.index',
+                'active' => request()->routeIs('invoices.index') || request()->routeIs('invoices.show'),
+            ],
+        ];
 @endphp
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Campus Book Hub POS')</title>
+    <title>@yield('title', 'National Book Store - Ventic Branch')</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #efe6d8;
-            --paper: rgba(255, 250, 242, 0.92);
-            --paper-strong: #fffdf8;
-            --ink: #211915;
-            --muted: #78675d;
-            --line: rgba(84, 57, 42, 0.15);
-            --accent: #b74b2c;
-            --accent-dark: #8a3019;
-            --accent-soft: #f4dfd2;
+            --bg: #f5f3ef;
+            --paper: #ffffff;
+            --paper-strong: #ffffff;
+            --ink: #1d1d1d;
+            --muted: #666666;
+            --line: #ddd6cd;
+            --accent: #b3131b;
+            --accent-dark: #8d0f16;
+            --accent-soft: #f9ecec;
             --gold: #d0aa73;
             --ui-font: 'Space Grotesk', sans-serif;
             --mono-font: 'IBM Plex Mono', monospace;
-            --shadow: 0 24px 80px rgba(58, 34, 20, 0.12);
+            --shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
         }
 
         * {
@@ -57,10 +71,7 @@
             min-height: 100vh;
             font-family: var(--ui-font);
             color: var(--ink);
-            background:
-                radial-gradient(circle at top left, rgba(192, 90, 50, 0.22), transparent 28%),
-                radial-gradient(circle at bottom right, rgba(208, 164, 95, 0.24), transparent 24%),
-                linear-gradient(135deg, #e6dac8 0%, #f7f1e7 48%, #eadfcc 100%);
+            background: var(--bg);
         }
 
         a {
@@ -76,9 +87,9 @@
         }
 
         .shell {
-            max-width: 1280px;
+            max-width: 1120px;
             margin: 0 auto;
-            padding: 24px;
+            padding: 20px;
         }
 
         .topbar {
@@ -86,13 +97,13 @@
             flex-wrap: wrap;
             align-items: center;
             justify-content: space-between;
-            gap: 16px;
-            padding: 18px 22px;
-            border-radius: 24px;
-            background: rgba(255, 250, 242, 0.84);
+            gap: 14px;
+            padding: 14px 18px;
+            border-radius: 14px;
+            background: #ffffff;
             border: 1px solid var(--line);
             box-shadow: var(--shadow);
-            backdrop-filter: blur(14px);
+            border-bottom: 3px solid var(--accent);
         }
 
         .brand {
@@ -110,8 +121,9 @@
         }
 
         .brand strong {
-            font-size: 22px;
+            font-size: 20px;
             letter-spacing: -0.03em;
+            color: var(--accent);
         }
 
         .nav {
@@ -128,8 +140,8 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            border-radius: 999px;
-            padding: 12px 18px;
+            border-radius: 10px;
+            padding: 10px 14px;
             border: 1px solid transparent;
             cursor: pointer;
             transition: 0.2s ease;
@@ -138,29 +150,33 @@
 
         .nav-link,
         .nav-button {
-            background: rgba(255, 255, 255, 0.55);
-            border-color: rgba(84, 57, 42, 0.08);
+            background: #f7f7f7;
+            border-color: var(--line);
         }
 
         .nav-link:hover,
-        .nav-button:hover,
+        .nav-button:hover {
+            opacity: 0.85;
+            background: #edeae6;
+        }
+
         .btn:hover {
+            opacity: 0.9;
             transform: translateY(-1px);
         }
 
         .nav-link.active {
-            background: linear-gradient(135deg, var(--accent), #d66a45);
+            background: var(--accent);
             border-color: transparent;
             color: #fffaf6;
-            box-shadow: 0 14px 26px rgba(183, 75, 44, 0.25);
         }
 
         .nav-button {
-            color: var(--accent-dark);
+            color: var(--ink);
         }
 
         main {
-            padding-top: 24px;
+            padding-top: 18px;
         }
 
         .page-head {
@@ -169,12 +185,12 @@
             align-items: end;
             justify-content: space-between;
             gap: 16px;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
 
         .page-title {
             margin: 0;
-            font-size: clamp(2.2rem, 4vw, 3.5rem);
+            font-size: clamp(1.9rem, 3vw, 2.6rem);
             line-height: 0.95;
             letter-spacing: -0.05em;
         }
@@ -189,10 +205,9 @@
         .panel {
             background: var(--paper);
             border: 1px solid var(--line);
-            border-radius: 28px;
-            padding: 24px;
+            border-radius: 14px;
+            padding: 20px;
             box-shadow: var(--shadow);
-            backdrop-filter: blur(16px);
         }
 
         .stats-grid,
@@ -201,7 +216,7 @@
         .cart-layout,
         .line-grid {
             display: grid;
-            gap: 18px;
+            gap: 14px;
         }
 
         .stats-grid {
@@ -227,16 +242,17 @@
         }
 
         .stat-card {
-            padding: 18px 20px;
-            border-radius: 24px;
-            border: 1px solid rgba(84, 57, 42, 0.08);
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.7), rgba(255, 250, 242, 0.92));
+            padding: 16px 18px;
+            border-radius: 12px;
+            border: 1px solid var(--line);
+            border-left: 3px solid var(--accent);
+            background: #faf8f5;
         }
 
         .stat-value {
             display: block;
             margin-top: 10px;
-            font-size: 30px;
+            font-size: 26px;
             font-weight: 700;
             letter-spacing: -0.05em;
         }
@@ -260,11 +276,11 @@
         select,
         textarea {
             width: 100%;
-            border: 1px solid rgba(84, 57, 42, 0.16);
+            border: 1px solid var(--line);
             background: var(--paper-strong);
             color: var(--ink);
-            padding: 14px 16px;
-            border-radius: 18px;
+            padding: 12px 14px;
+            border-radius: 10px;
             outline: none;
             transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
@@ -273,7 +289,7 @@
         select:focus,
         textarea:focus {
             border-color: rgba(183, 75, 44, 0.6);
-            box-shadow: 0 0 0 4px rgba(183, 75, 44, 0.12);
+            box-shadow: 0 0 0 3px rgba(179, 19, 27, 0.12);
         }
 
         textarea {
@@ -286,25 +302,25 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--accent), #d86843);
+            background: var(--accent);
             color: #fff9f4;
-            box-shadow: 0 16px 30px rgba(183, 75, 44, 0.22);
+            box-shadow: 0 2px 10px rgba(179, 19, 27, 0.38);
         }
 
         .btn-secondary {
-            background: #f1e5d8;
+            background: #f5f5f5;
             color: var(--ink);
-            border: 1px solid rgba(84, 57, 42, 0.08);
+            border: 1px solid var(--line);
         }
 
         .btn-ghost {
             background: transparent;
-            border: 1px solid rgba(84, 57, 42, 0.14);
+            border: 1px solid var(--line);
             color: var(--accent-dark);
         }
 
         .btn-danger {
-            background: #301c18;
+            background: #2d2d2d;
             color: #fff6f1;
         }
 
@@ -368,7 +384,7 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            border-radius: 999px;
+            border-radius: 8px;
             padding: 8px 12px;
             background: var(--accent-soft);
             color: var(--accent-dark);
@@ -380,10 +396,10 @@
 
         .alert {
             margin-bottom: 18px;
-            border-radius: 22px;
+            border-radius: 12px;
             padding: 16px 18px;
-            border: 1px solid rgba(84, 57, 42, 0.1);
-            background: rgba(255, 250, 242, 0.9);
+            border: 1px solid var(--line);
+            background: #ffffff;
         }
 
         .alert.error {
@@ -404,10 +420,10 @@
         }
 
         .line-item {
-            padding: 18px;
-            border-radius: 24px;
-            border: 1px solid rgba(84, 57, 42, 0.1);
-            background: rgba(255, 255, 255, 0.55);
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid var(--line);
+            background: #fcfbf9;
         }
 
         .line-top {
@@ -448,8 +464,8 @@
         .empty-state {
             padding: 26px;
             border: 1px dashed rgba(84, 57, 42, 0.22);
-            border-radius: 24px;
-            background: rgba(255, 255, 255, 0.4);
+            border-radius: 12px;
+            background: #fcfbf9;
             color: var(--muted);
         }
 
@@ -480,18 +496,32 @@
         .receipt-wrap {
             display: grid;
             place-items: center;
+            background: #c5bfb8;
+            border-radius: 14px;
+            padding: 32px 24px;
+            border: 1px solid #b0aaa3;
         }
 
+            .receipt-stage {
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
         .receipt {
-            width: min(100%, 360px);
-            padding: 24px 22px 28px;
-            border-radius: 18px;
-            border: 1px solid rgba(84, 57, 42, 0.12);
-            background: linear-gradient(180deg, #fffefc 0%, #f9f3e8 100%);
-            box-shadow: 0 18px 40px rgba(58, 34, 20, 0.14);
+            width: min(100%, 300px);
+            padding: 18px 16px 24px;
+            border-radius: 2px;
+            border: none;
+            background: #fffef9;
+            box-shadow:
+                0 2px 0 0 rgba(0,0,0,0.06),
+                0 14px 40px rgba(0, 0, 0, 0.22),
+                0 4px 10px rgba(0, 0, 0, 0.10);
             font-family: var(--mono-font);
-            font-size: 12px;
-            line-height: 1.55;
+            font-size: 11px;
+            line-height: 1.5;
         }
 
         .receipt-center {
@@ -506,8 +536,8 @@
         }
 
         .receipt-rule {
-            margin: 12px 0;
-            border-top: 1px dashed rgba(84, 57, 42, 0.3);
+            margin: 8px 0;
+            border-top: 1px dashed #666;
         }
 
         .receipt-row {
@@ -582,10 +612,10 @@
                 background: white;
             }
 
+            /* hide all chrome — only the receipt aside survives */
             .topbar,
             .screen-only,
             .alert,
-            .page-head .inline-actions,
             .print-note {
                 display: none !important;
             }
@@ -593,6 +623,29 @@
             .shell {
                 max-width: none;
                 padding: 0;
+            }
+
+            main {
+                padding-top: 0;
+            }
+
+            .grid-2 {
+                display: block;
+            }
+
+            .receipt-wrap {
+                display: block;
+                width: 100%;
+                text-align: center;
+                background: none;
+                padding: 0;
+                border: none;
+                border-radius: 0;
+            }
+
+            .receipt-stage {
+                width: 100%;
+                display: block;
             }
 
             .panel {
@@ -603,12 +656,15 @@
             }
 
             .receipt {
-                width: 100%;
-                max-width: none;
+                display: inline-block;
+                width: 300px;
+                text-align: left;
                 border: none;
                 border-radius: 0;
                 box-shadow: none;
                 background: white;
+                padding: 0;
+                margin: 0;
             }
         }
     </style>
@@ -617,8 +673,8 @@
     <div class="shell">
         <header class="topbar screen-only">
             <a href="{{ auth()->check() ? route('dashboard') : route('home') }}" class="brand">
-                <span class="eyebrow">Thermal Receipt Inspired</span>
-                <strong>Campus Book Hub POS</strong>
+                <span class="eyebrow">IT Elect 2 Project</span>
+                <strong>National Book Store - Ventic Branch</strong>
             </a>
 
             <nav class="nav">
@@ -629,7 +685,7 @@
                         </a>
                     @endforeach
 
-                    <span class="badge">{{ auth()->user()->name }}</span>
+                    <span class="badge">{{ $user->is_admin ? 'Admin' : 'Customer' }}: {{ $user->name }}</span>
 
                     <form action="{{ route('logout') }}" method="POST">
                         @csrf

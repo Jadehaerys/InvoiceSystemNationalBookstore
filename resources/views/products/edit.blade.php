@@ -27,6 +27,11 @@
                     <input type="number" id="price" name="price" min="0" step="0.01" value="{{ old('price', $product->price) }}" required>
                 </div>
 
+                <div class="field">
+                    <label for="stock_quantity">Stock On Hand</label>
+                    <input type="number" id="stock_quantity" name="stock_quantity" min="0" step="1" value="{{ old('stock_quantity', $product->stock_quantity) }}" required>
+                </div>
+
                 <div class="field field-full">
                     <label for="category">Category</label>
                     <input type="text" id="category" name="category" value="{{ old('category', $product->category) }}">

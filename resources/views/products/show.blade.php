@@ -18,7 +18,7 @@
 
     <div class="grid-2">
         <section class="panel">
-            <div class="stats-grid" style="grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 0;">
+            <div class="stats-grid" style="grid-template-columns: repeat(3, minmax(0, 1fr)); margin-bottom: 0;">
                 <article class="stat-card">
                     <span class="label">Category</span>
                     <strong class="stat-value" style="font-size: 24px;">{{ $product->category ?: 'Uncategorized' }}</strong>
@@ -26,6 +26,10 @@
                 <article class="stat-card">
                     <span class="label">Selling Price</span>
                     <strong class="stat-value mono" style="font-size: 24px;">{{ number_format((float) $product->price, 2) }}</strong>
+                </article>
+                <article class="stat-card">
+                    <span class="label">Stock On Hand</span>
+                    <strong class="stat-value mono" style="font-size: 24px;">{{ $product->stock_quantity }}</strong>
                 </article>
             </div>
         </section>

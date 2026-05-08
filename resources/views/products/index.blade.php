@@ -27,9 +27,9 @@
             <span class="stat-note">Average selling price across all items</span>
         </article>
         <article class="stat-card">
-            <span class="label">Categories</span>
-            <strong class="stat-value">{{ $products->pluck('category')->filter()->unique()->count() }}</strong>
-            <span class="stat-note">Useful for grouped receipt reporting</span>
+            <span class="label">Stock On Hand</span>
+            <strong class="stat-value">{{ $products->sum('stock_quantity') }}</strong>
+            <span class="stat-note">Total remaining inventory across all products</span>
         </article>
     </section>
 
@@ -45,6 +45,7 @@
                         <tr>
                             <th>Product</th>
                             <th>Category</th>
+                            <th>Stock</th>
                             <th>Price</th>
                             <th>Description</th>
                             <th>Actions</th>
@@ -55,6 +56,7 @@
                             <tr>
                                 <td><strong>{{ $product->name }}</strong></td>
                                 <td>{{ $product->category ?: 'Uncategorized' }}</td>
+                                <td class="mono">{{ $product->stock_quantity }}</td>
                                 <td class="mono">{{ number_format((float) $product->price, 2) }}</td>
                                 <td class="muted">{{ $product->description ?: 'No description provided.' }}</td>
                                 <td>

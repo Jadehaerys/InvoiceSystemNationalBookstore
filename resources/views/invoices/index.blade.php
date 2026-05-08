@@ -5,13 +5,13 @@
 @section('content')
     <div class="page-head">
         <div>
-            <span class="badge">Sales Dashboard</span>
-            <h1 class="page-title" style="margin-top: 12px;">Receipt history and daily totals</h1>
-            <p class="page-subtitle">Track completed sales, jump back into any receipt, and keep the final project flow close to a bookstore cashier terminal.</p>
+            <span class="badge">{{ $isAdmin ? 'Sales Dashboard' : 'My Receipts' }}</span>
+            <h1 class="page-title" style="margin-top: 12px;">{{ $isAdmin ? 'Receipt history and daily totals' : 'My purchase history' }}</h1>
+            <p class="page-subtitle">{{ $isAdmin ? 'Track completed sales, manage receipts, and monitor the branch totals from one screen.' : 'Review your purchases, reopen any receipt, and export a PDF copy when needed.' }}</p>
         </div>
 
         <div class="inline-actions screen-only">
-            <a href="{{ route('pos.create') }}" class="btn btn-primary">New Sale</a>
+            <a href="{{ route('pos.create') }}" class="btn btn-primary">{{ $isAdmin ? 'New Sale' : 'Buy Again' }}</a>
         </div>
     </div>
 
@@ -80,12 +80,15 @@
                                 <td>
                                     <div class="table-actions">
                                         <a href="{{ route('invoices.show', $invoice) }}" class="btn btn-secondary">View</a>
-                                        <a href="{{ route('invoices.edit', $invoice) }}" class="btn btn-ghost">Edit</a>
-                                        <form action="{{ route('invoices.destroy', $invoice) }}" method="POST">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-danger" onclick="return confirm('Delete this receipt?')">Delete</button>
-                                        </form>
+                                        <a href="{{ route('invoices.pdf', $invoice) }}" class="btn btn-ghost">PDF</a>
+                                        @if ($isAdmin)
+                                            <a href="{{ route('invoices.edit', $invoice) }}" class="btn btn-ghost">Edit</a>
+                                            <form action="{{ route('invoices.destroy', $invoice) }}" method="POST">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-danger" onclick="return confirm('Delete this receipt? Stock will be restored.')">Delete</button>
+                                            </form>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>

@@ -7,7 +7,7 @@
         <div>
             <span class="badge">Receipt Revision</span>
             <h1 class="page-title" style="margin-top: 12px;">Edit transaction {{ $invoice->trx_no }}</h1>
-            <p class="page-subtitle">Adjust items, cash tendered, or the selected buyer profile, then regenerate the receipt totals automatically.</p>
+            <p class="page-subtitle">Adjust the item list, tendered cash, or buyer assignment. Stock levels will be recalculated automatically when you save.</p>
         </div>
 
         <div class="inline-actions screen-only">

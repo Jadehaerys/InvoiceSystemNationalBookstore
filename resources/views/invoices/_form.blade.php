@@ -30,17 +30,25 @@
         <div class="cart-layout">
             <section class="panel">
                 <div class="form-grid">
-                    <div class="field">
-                        <label for="customer_id">Buyer Profile</label>
-                        <select id="customer_id" name="customer_id">
-                            <option value="">No saved profile (walk-in sale)</option>
-                            @foreach ($customers as $customer)
-                                <option value="{{ $customer->id }}" {{ (string) old('customer_id', $invoice->customer_id) === (string) $customer->id ? 'selected' : '' }}>
-                                    {{ $customer->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
+                    @if (! empty($lockedCustomer))
+                        <input type="hidden" name="customer_id" value="{{ $lockedCustomer->id }}">
+                        <div class="field field-full">
+                            <label>Linked Buyer Profile</label>
+                            <input type="text" value="{{ $lockedCustomer->name }} | {{ $lockedCustomer->address }} | {{ $lockedCustomer->contact_number }}" readonly>
+                        </div>
+                    @else
+                        <div class="field">
+                            <label for="customer_id">Buyer Profile</label>
+                            <select id="customer_id" name="customer_id">
+                                <option value="">No saved profile (walk-in sale)</option>
+                                @foreach ($customers as $customer)
+                                    <option value="{{ $customer->id }}" {{ (string) old('customer_id', $invoice->customer_id) === (string) $customer->id ? 'selected' : '' }}>
+                                        {{ $customer->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    @endif
 
                     <div class="field">
                         <label for="invoice_date">Transaction Date</label>
@@ -54,10 +62,14 @@
                         >
                     </div>
 
-                    <div class="field field-full">
-                        <label for="term_no">Terminal Number</label>
-                        <input type="text" id="term_no" name="term_no" value="{{ old('term_no', $invoice->term_no ?: '0002') }}" maxlength="10">
-                    </div>
+                    @if ($isAdmin)
+                        <div class="field field-full">
+                            <label for="term_no">Terminal Number</label>
+                            <input type="text" id="term_no" name="term_no" value="{{ old('term_no', $invoice->term_no ?: '0002') }}" maxlength="10">
+                        </div>
+                    @else
+                        <input type="hidden" id="term_no" name="term_no" value="{{ old('term_no', $invoice->term_no ?: '0002') }}">
+                    @endif
                 </div>
 
                 <div class="page-head" style="margin-bottom: 18px;">
@@ -89,9 +101,10 @@
                                             <option
                                                 value="{{ $product->id }}"
                                                 data-price="{{ number_format((float) $product->price, 2, '.', '') }}"
+                                                data-stock="{{ $product->stock_quantity }}"
                                                 {{ (string) ($item['product_id'] ?? '') === (string) $product->id ? 'selected' : '' }}
                                             >
-                                                {{ $product->name }} @if($product->category) - {{ $product->category }} @endif
+                                                {{ $product->name }} @if($product->category) - {{ $product->category }} @endif (Stock: {{ $product->stock_quantity }})
                                             </option>
                                         @endforeach
                                     </select>
@@ -100,6 +113,7 @@
                                 <div class="field">
                                     <label>Quantity</label>
                                     <input type="number" min="1" name="items[{{ $index }}][quantity]" class="quantity-input" value="{{ $item['quantity'] ?? 1 }}" required>
+                                    <span class="muted stock-display">Stock: --</span>
                                 </div>
 
                                 <div class="field">
@@ -119,7 +133,7 @@
 
             <aside class="panel summary-card">
                 <span class="badge">Live Receipt Totals</span>
-                <p class="page-subtitle" style="margin-top: 14px;">These fields mirror the thermal receipt structure from your sample image.</p>
+                    <p class="page-subtitle" style="margin-top: 14px;">These values are calculated from the cart and follow the branch receipt layout.</p>
 
                 <div class="field" style="margin-top: 20px;">
                     <label for="cash">Cash Tendered</label>
@@ -170,8 +184,8 @@
                     <select name="items[__INDEX__][product_id]" class="product-select" required>
                         <option value="">Choose a title</option>
                         @foreach ($products as $product)
-                            <option value="{{ $product->id }}" data-price="{{ number_format((float) $product->price, 2, '.', '') }}">
-                                {{ $product->name }} @if($product->category) - {{ $product->category }} @endif
+                            <option value="{{ $product->id }}" data-price="{{ number_format((float) $product->price, 2, '.', '') }}" data-stock="{{ $product->stock_quantity }}">
+                                {{ $product->name }} @if($product->category) - {{ $product->category }} @endif (Stock: {{ $product->stock_quantity }})
                             </option>
                         @endforeach
                     </select>
@@ -180,6 +194,7 @@
                 <div class="field">
                     <label>Quantity</label>
                     <input type="number" min="1" name="items[__INDEX__][quantity]" class="quantity-input" value="1" required>
+                    <span class="muted stock-display">Stock: --</span>
                 </div>
 
                 <div class="field">
@@ -217,13 +232,19 @@
                 const quantityInput = row.querySelector('.quantity-input');
                 const priceDisplay = row.querySelector('.price-display');
                 const amountDisplay = row.querySelector('.amount-display');
+                const stockDisplay = row.querySelector('.stock-display');
                 const selected = select.options[select.selectedIndex];
                 const price = Number(selected ? selected.dataset.price : 0);
+                const stock = Number(selected ? selected.dataset.stock : 0);
                 const quantity = Number(quantityInput.value || 0);
                 const amount = price * quantity;
 
                 priceDisplay.value = money(price);
                 amountDisplay.value = money(amount);
+                quantityInput.max = stock > 0 ? stock : '';
+                stockDisplay.textContent = selected && select.value !== ''
+                    ? `Stock: ${stock}`
+                    : 'Stock: --';
             }
 
             function reindexRows() {
