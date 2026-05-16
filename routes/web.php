@@ -29,6 +29,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/invoices/{invoice}/pdf', [InvoiceController::class, 'downloadPdf'])->name('invoices.pdf');
 
     Route::resource('invoices', InvoiceController::class);
-    Route::resource('products', ProductController::class);
-    Route::resource('customers', CustomerController::class);
+
+    // Admin-only routes
+    Route::middleware('admin')->group(function () {
+        Route::resource('products', ProductController::class);
+        Route::resource('customers', CustomerController::class);
+    });
 });

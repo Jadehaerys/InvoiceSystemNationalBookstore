@@ -144,7 +144,7 @@ class InvoiceController extends Controller
         $invoice->load(['customer', 'items.product']);
 
         return Pdf::loadView('invoices.pdf', compact('invoice'))
-            ->setPaper([0, 0, 240, 900], 'portrait')
+            ->setPaper([0, 0, 283, 900], 'portrait')
             ->download('receipt-' . $invoice->trx_no . '.pdf');
     }
 
