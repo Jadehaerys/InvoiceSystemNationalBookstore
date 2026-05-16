@@ -11,8 +11,6 @@ class CustomerController extends Controller
 {
     public function index(): View
     {
-        $this->ensureAdmin();
-
         $customers = Customer::withCount('invoices')
             ->orderBy('name')
             ->get();
@@ -22,15 +20,11 @@ class CustomerController extends Controller
 
     public function create(): View
     {
-        $this->ensureAdmin();
-
         return view('customers.create');
     }
 
     public function store(Request $request): RedirectResponse
     {
-        $this->ensureAdmin();
-
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'address' => ['required', 'string', 'max:500'],
@@ -46,8 +40,6 @@ class CustomerController extends Controller
 
     public function show(Customer $customer): View
     {
-        $this->ensureAdmin();
-
         $customer->load(['invoices' => fn ($query) => $query->latest('invoice_date')]);
 
         return view('customers.show', compact('customer'));
@@ -55,15 +47,11 @@ class CustomerController extends Controller
 
     public function edit(Customer $customer): View
     {
-        $this->ensureAdmin();
-
         return view('customers.edit', compact('customer'));
     }
 
     public function update(Request $request, Customer $customer): RedirectResponse
     {
-        $this->ensureAdmin();
-
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'address' => ['required', 'string', 'max:500'],
@@ -79,17 +67,10 @@ class CustomerController extends Controller
 
     public function destroy(Customer $customer): RedirectResponse
     {
-        $this->ensureAdmin();
-
         $customer->delete();
 
         return redirect()
             ->route('customers.index')
             ->with('success', 'Customer deleted successfully.');
-    }
-
-    private function ensureAdmin(): void
-    {
-        abort_unless((bool) auth()->user()?->is_admin, 403);
     }
 }

@@ -11,8 +11,6 @@ class ProductController extends Controller
 {
     public function index(): View
     {
-        $this->ensureAdmin();
-
         $products = Product::orderBy('name')->get();
 
         return view('products.index', compact('products'));
@@ -20,15 +18,11 @@ class ProductController extends Controller
 
     public function create(): View
     {
-        $this->ensureAdmin();
-
         return view('products.create');
     }
 
     public function store(Request $request): RedirectResponse
     {
-        $this->ensureAdmin();
-
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'price' => ['required', 'numeric', 'min:0'],
@@ -46,22 +40,16 @@ class ProductController extends Controller
 
     public function show(Product $product): View
     {
-        $this->ensureAdmin();
-
         return view('products.show', compact('product'));
     }
 
     public function edit(Product $product): View
     {
-        $this->ensureAdmin();
-
         return view('products.edit', compact('product'));
     }
 
     public function update(Request $request, Product $product): RedirectResponse
     {
-        $this->ensureAdmin();
-
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'price' => ['required', 'numeric', 'min:0'],
@@ -79,17 +67,10 @@ class ProductController extends Controller
 
     public function destroy(Product $product): RedirectResponse
     {
-        $this->ensureAdmin();
-
         $product->delete();
 
         return redirect()
             ->route('products.index')
             ->with('success', 'Product deleted successfully.');
-    }
-
-    private function ensureAdmin(): void
-    {
-        abort_unless((bool) auth()->user()?->is_admin, 403);
     }
 }

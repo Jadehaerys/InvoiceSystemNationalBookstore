@@ -9,7 +9,7 @@
     <meta charset="UTF-8">
     <title>Receipt {{ $invoice->trx_no }}</title>
     <style>
-        @page { margin: 12mm 14mm; }
+        @page { margin: 10mm 8mm; }
 
         * { box-sizing: border-box; }
 
@@ -143,7 +143,9 @@
 
     <div class="footer">
         Items may be exchanged within 7 days if unused and accompanied by
-        this receipt. Clearance items are considered final sale.
+        this receipt. Clearance items are considered final sale.<br>
+        This document is generated for an academic Laravel POS project
+        modeled after the submitted National Book Store sample invoice.
     </div>
 
 </div>
